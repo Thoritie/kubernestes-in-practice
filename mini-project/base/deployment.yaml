@@ -1,0 +1,63 @@
+#base/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odds-shopweb
+spec:
+  selector:
+    matchLabels:
+      app: odds-shopweb
+  template:
+    metadata:
+      labels:
+        app: odds-shopweb
+    spec:
+      containers:
+        - name: odds-shopweb
+          image: ghcr.io/bazsup/odds-shopweb:v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odds-shopgw
+spec:
+  selector:
+    matchLabels:
+      app: odds-shopgw
+  template:
+    metadata:
+      labels:
+        app: odds-shopgw
+    spec:
+      containers:
+        - name: odds-shopgw
+          image: ghcr.io/bazsup/odds-shopgw:v2
+          env:
+          - name: MY_JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: odds-secret
+                key: MY_JWT_SECRET
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odds-shopapi
+spec:
+  selector:
+    matchLabels:
+      app: odds-shopapi
+  template:
+    metadata:
+      labels:
+        app: odds-shopapi
+    spec:
+      containers: 
+        - name: odds-shopapi
+          image: ghcr.io/bazsup/odds-shopapi:v1
+          env:
+          - name: MY_JWT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: odds-secret
+                key: MY_JWT_SECRET
